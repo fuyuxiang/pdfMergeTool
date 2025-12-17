@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PDF合并小工具</title>
+  <style>
+    :root { color-scheme: light; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+      max-width: 860px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+    .card {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.05);
+    }
+    h1 { font-size: 22px; margin: 0 0 8px; }
+    p  { margin: 6px 0 14px; color: #374151; line-height: 1.6; }
+    label { display: block; margin: 10px 0 6px; font-weight: 600; }
+    input[type="file"], input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+    }
+    .row { display: grid; grid-template-columns: 1fr 220px; gap: 12px; }
+    button {
+      cursor: pointer;
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: #111827;
+      color: white;
+      font-weight: 700;
+      width: 100%;
+    }
+    button:hover { opacity: .92; }
+    .help { font-size: 13px; color: #6b7280; margin-top: 8px; }
+    .flash { padding: 10px 12px; border-radius: 12px; margin: 0 0 12px; }
+    .flash.error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .flash.ok { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    footer { margin-top: 18px; color: #6b7280; font-size: 12px; }
+    @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>PDF合并小工具</h1>
+    <p>选择多个 PDF，按选择顺序在服务器端合并，并立即下载合并后的文件。</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, msg in messages %}
+          <div class="flash {{category}}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form action="/merge" method="post" enctype="multipart/form-data">
+      <label for="pdfs">选择 PDF（可多选）</label>
+      <input id="pdfs" name="pdfs" type="file" accept="application/pdf" multiple required />
+
+      <div class="row">
+        <div>
+          <label for="output_name">输出文件名（可选）</label>
+          <input id="output_name" name="output_name" type="text" placeholder="例如：合同合集.pdf 或 contract_bundle" />
+          <div class="help">不填则默认为 <code>merged.pdf</code></div>
+        </div>
+        <div style="align-self:end;">
+          <button type="submit">合并并下载</button>
+        </div>
+      </div>
+
+      <div class="help">提示：如果 PDF 需要密码（加密），本工具通常无法合并。</div>
+    </form>
+
+    <footer>
+      文件默认仅在服务器内存中处理，不会落盘保存（除非你自行修改代码）。
+    </footer>
+  </div>
+</body>
+</html>
